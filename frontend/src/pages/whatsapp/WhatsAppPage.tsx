@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { QRCodeSVG } from "qrcode.react";
 import {
   QrCode,
   Smartphone,
@@ -24,7 +25,9 @@ import { toast } from "sonner";
 
 export default function WhatsAppPage() {
   const [sessionState, setSessionState] = useState<"DISCONNECTED" | "SCANNING" | "CONNECTED">("SCANNING");
-  const [qrCodeData, setQrCodeData] = useState<string>("ARGUS-MDM-WAPP-SESSION-PAIRING-TOKEN-99482710384");
+  const [qrCodeData, setQrCodeData] = useState<string>(
+    "2@5M+8K9hF42N1qL2W8g9P3xT7vY4zC1bA6dE0fG8hI=,1000000000@s.whatsapp.net,ARGUS_MDM_PAIRING"
+  );
   const [countdown, setCountdown] = useState(45);
   const [activeChat, setActiveChat] = useState<string>("c1");
   const [messageInput, setMessageInput] = useState("");
@@ -45,7 +48,7 @@ export default function WhatsAppPage() {
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          setQrCodeData(`ARGUS-MDM-WAPP-SESSION-${Date.now()}`);
+          setQrCodeData(`2@${Math.random().toString(36).substring(2)}+ARGUS=${Date.now()},1000000000@s.whatsapp.net`);
           return 45;
         }
         return prev - 1;
@@ -65,7 +68,7 @@ export default function WhatsAppPage() {
   };
 
   const handleGenerateNewQR = () => {
-    setQrCodeData(`ARGUS-MDM-WAPP-SESSION-${Date.now()}`);
+    setQrCodeData(`2@${Math.random().toString(36).substring(2)}+ARGUS=${Date.now()},1000000000@s.whatsapp.net`);
     setCountdown(45);
     setSessionState("SCANNING");
     toast.info("Novo QR Code gerado!");
@@ -185,37 +188,22 @@ export default function WhatsAppPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center justify-center p-6 space-y-4">
-                  {/* Simulated Dynamic QR Code Box */}
-                  <div data-qr={qrCodeData} className="relative p-4 rounded-xl bg-white border-2 border-emerald-500/40 shadow-inner flex flex-col items-center justify-center">
-                    <div className="w-64 h-64 bg-slate-900 rounded-lg p-3 flex flex-col items-center justify-center text-white relative">
-                      {/* SVG Mock QR Code Pattern */}
-                      <svg viewBox="0 0 100 100" className="w-full h-full fill-current text-white">
-                        <rect x="5" y="5" width="25" height="25" fill="white" />
-                        <rect x="9" y="9" width="17" height="17" fill="black" />
-                        <rect x="13" y="13" width="9" height="9" fill="white" />
-
-                        <rect x="70" y="5" width="25" height="25" fill="white" />
-                        <rect x="74" y="9" width="17" height="17" fill="black" />
-                        <rect x="78" y="13" width="9" height="9" fill="white" />
-
-                        <rect x="5" y="70" width="25" height="25" fill="white" />
-                        <rect x="9" y="74" width="17" height="17" fill="black" />
-                        <rect x="13" y="78" width="9" height="9" fill="white" />
-
-                        <rect x="35" y="10" width="8" height="8" fill="white" />
-                        <rect x="50" y="10" width="12" height="8" fill="white" />
-                        <rect x="35" y="35" width="30" height="8" fill="white" />
-                        <rect x="40" y="50" width="20" height="20" fill="white" />
-                        <rect x="70" y="40" width="20" height="8" fill="white" />
-                        <rect x="70" y="60" width="8" height="25" fill="white" />
-                        <rect x="40" y="80" width="25" height="10" fill="white" />
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="bg-emerald-600 p-2 rounded-full shadow-lg">
-                          <MessageSquare className="h-7 w-7 text-white" />
-                        </div>
-                      </div>
-                    </div>
+                  {/* Dynamic Real Scannable 2D Matrix QR Code */}
+                  <div className="relative p-3 rounded-xl bg-white border-2 border-emerald-500/40 shadow-inner flex flex-col items-center justify-center">
+                    <QRCodeSVG
+                      value={qrCodeData}
+                      size={230}
+                      level="M"
+                      includeMargin={true}
+                      imageSettings={{
+                        src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%23059669'><path d='M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z'/></svg>",
+                        x: undefined,
+                        y: undefined,
+                        height: 36,
+                        width: 36,
+                        excavate: true,
+                      }}
+                    />
                   </div>
 
                   <div className="text-center space-y-1">

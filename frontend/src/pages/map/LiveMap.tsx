@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import { Circle, CircleMarker, MapContainer, Marker, Polyline, Popup, TileLayer } from "react-leaflet";
+import { Circle, CircleMarker, MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from "react-leaflet";
 import { toast } from "sonner";
 import { LogIn, LogOut, MapPin, Trash2 } from "lucide-react";
 import "leaflet/dist/leaflet.css";
@@ -30,6 +30,21 @@ function toDateTimeLocalValue(date: Date): string {
 }
 
 const DEFAULT_CENTER: [number, number] = [-15.793889, -47.882778];
+
+function MapFlyTo({ center, zoom = 15 }: { center: [number, number] | null; zoom?: number }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (center && typeof center[0] === "number" && typeof center[1] === "number") {
+      map.flyTo(center, zoom, {
+        animate: true,
+        duration: 1.2,
+      });
+    }
+  }, [center, zoom, map]);
+
+  return null;
+}
 
 export default function LiveMap() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -97,6 +112,21 @@ export default function LiveMap() {
   const locations = Object.values(liveLocations);
   const trajectory = history?.content.map((loc) => [loc.latitude, loc.longitude] as [number, number]) ?? [];
 
+  const targetCenter = useMemo<[number, number] | null>(() => {
+    if (!selectedDeviceId) return null;
+
+    const live = liveLocations[selectedDeviceId];
+    if (live && typeof live.latitude === "number" && typeof live.longitude === "number") {
+      return [live.latitude, live.longitude];
+    }
+
+    if (trajectory.length > 0) {
+      return trajectory[0];
+    }
+
+    return DEFAULT_CENTER;
+  }, [selectedDeviceId, liveLocations, trajectory]);
+
   return (
     <div>
       <PageHeader title="Mapa & Geofencing" description="Localização em tempo real e áreas monitoradas" />
@@ -109,6 +139,7 @@ export default function LiveMap() {
                 attribution='&copy; OpenStreetMap contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
+              <MapFlyTo center={targetCenter} zoom={15} />
               {locations.map((loc) => (
                 <Marker key={loc.deviceId} position={[loc.latitude, loc.longitude]} icon={markerIcon}>
                   <Popup>
