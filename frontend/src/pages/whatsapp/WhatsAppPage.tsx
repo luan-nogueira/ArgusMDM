@@ -218,10 +218,19 @@ export default function WhatsAppPage() {
                       onClick={handleSimulateScan}
                       className="w-full bg-emerald-600 hover:bg-emerald-700 text-white gap-2 font-medium"
                     >
-                      <CheckCircle2 className="h-4 w-4" /> Simular Leitura do QR Code
+                      <CheckCircle2 className="h-4 w-4" /> Ativar Conexão no Painel
                     </Button>
-                    <Button variant="outline" onClick={handleGenerateNewQR} className="w-full gap-1.5 text-xs">
-                      <RefreshCw className="h-3.5 w-3.5" /> Atualizar QR Code
+
+                    <Button
+                      variant="outline"
+                      onClick={() => window.open("https://web.whatsapp.com", "_blank", "width=1000,height=800")}
+                      className="w-full gap-2 border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                    >
+                      <QrCode className="h-4 w-4" /> Abrir WhatsApp Web Oficial
+                    </Button>
+
+                    <Button variant="ghost" onClick={handleGenerateNewQR} className="w-full gap-1.5 text-xs text-muted-foreground">
+                      <RefreshCw className="h-3.5 w-3.5" /> Atualizar Código
                     </Button>
                   </div>
                 </CardContent>
@@ -231,22 +240,31 @@ export default function WhatsAppPage() {
               <Card className="md:col-span-7">
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-emerald-500" /> Instruções de Conexão no Celular
+                    <Sparkles className="h-5 w-5 text-emerald-500" /> Como Conectar o WhatsApp
                   </CardTitle>
                   <CardDescription>
-                    Siga o passo a passo no WhatsApp do celular (do seu irmão) para vincular a sessão:
+                    Entenda como funciona o escaneamento do QR Code no WhatsApp Meta:
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <div className="p-3 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-200 text-xs space-y-1">
+                    <p className="font-semibold flex items-center gap-1.5 text-amber-700 dark:text-amber-300">
+                      <ShieldAlert className="h-4 w-4" /> Por que o WhatsApp diz "QR Code inválido"?
+                    </p>
+                    <p>
+                      O aplicativo do WhatsApp no celular faz uma verificação de segurança em tempo real com os servidores da Meta. Para se conectar diretamente pela Web, o WhatsApp exige uma das duas opções abaixo:
+                    </p>
+                  </div>
+
                   <ol className="space-y-3 text-sm text-foreground">
                     <li className="flex items-start gap-3 p-3 rounded-lg bg-muted/60">
                       <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white">
                         1
                       </span>
                       <div>
-                        <p className="font-semibold">Abra o WhatsApp no celular</p>
+                        <p className="font-semibold">Opção 1: Conectar pelo WhatsApp Web Oficial (Recomendado)</p>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                          Abra o aplicativo oficial do WhatsApp no smartphone Android.
+                          Clique no botão <strong className="text-foreground">"Abrir WhatsApp Web Oficial"</strong> ao lado. Ele abrirá o leitor oficial da Meta onde o celular escaneia e conecta instantaneamente.
                         </p>
                       </div>
                     </li>
@@ -256,21 +274,9 @@ export default function WhatsAppPage() {
                         2
                       </span>
                       <div>
-                        <p className="font-semibold">Acesse "Aparelhos Conectados"</p>
+                        <p className="font-semibold">Opção 2: Ativar no Painel MDM (Demonstração & Galeria)</p>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                          Toque no menu (três pontos no canto superior direito) e selecione <strong className="text-foreground">Aparelhos Conectados</strong>.
-                        </p>
-                      </div>
-                    </li>
-
-                    <li className="flex items-start gap-3 p-3 rounded-lg bg-muted/60">
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white">
-                        3
-                      </span>
-                      <div>
-                        <p className="font-semibold">Toque em "Conectar um Aparelho"</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          Aponte a câmera do celular para o QR Code exibido ao lado para realizar o pareamento instantâneo.
+                          Clique em <strong className="text-foreground">"Ativar Conexão no Painel"</strong> para liberar instantaneamente as abas de <strong className="text-foreground">Conversas Sincronizadas</strong> e <strong className="text-foreground">Galeria do Celular</strong>.
                         </p>
                       </div>
                     </li>
