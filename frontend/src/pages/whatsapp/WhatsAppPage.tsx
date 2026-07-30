@@ -23,13 +23,14 @@ import { Input } from "@/components/ui/input";
 import { MediaGallery } from "@/components/whatsapp/MediaGallery";
 import { toast } from "sonner";
 
+import { apiClient } from "@/lib/api-client";
+
 export default function WhatsAppPage() {
   const [sessionState, setSessionState] = useState<"DISCONNECTED" | "SCANNING" | "CONNECTED">("SCANNING");
   const [qrCodeData, setQrCodeData] = useState<string>(
     "2@5M+8K9hF42N1qL2W8g9P3xT7vY4zC1bA6dE0fG8hI=,1000000000@s.whatsapp.net,ARGUS_MDM_PAIRING"
   );
   const [pairingCode, setPairingCode] = useState<string>("8942-5103");
-  const [evolutionUrl] = useState<string>("http://localhost:8081");
   const [countdown, setCountdown] = useState(45);
   const [activeChat, setActiveChat] = useState<string>("c1");
   const [messageInput, setMessageInput] = useState("");
@@ -46,22 +47,12 @@ export default function WhatsAppPage() {
 
   const fetchLiveEvolutionQr = async () => {
     try {
-      const response = await fetch(`${evolutionUrl}/instance/connect/argus_session`, {
-        headers: {
-          apikey: "argus_mdm_secret_key_2026",
-          "Content-Type": "application/json",
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        if (data?.code) setQrCodeData(data.code);
-        if (data?.pairingCode) setPairingCode(data.pairingCode);
-        if (data?.instance?.state === "open") {
-          setSessionState("CONNECTED");
-        }
-      }
+      const response = await apiClient.get<{ code?: string; pairingCode?: string; status?: string }>("/whatsapp/qr");
+      if (response.data?.code) setQrCodeData(response.data.code);
+      if (response.data?.pairingCode) setPairingCode(response.data.pairingCode);
+      if (response.data?.status === "CONNECTED") setSessionState("CONNECTED");
     } catch {
-      // Endpoint fallback
+      // Fallback gracioso
     }
   };
 
@@ -79,7 +70,7 @@ export default function WhatsAppPage() {
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [sessionState, evolutionUrl]);
+  }, [sessionState]);
 
   const handleSimulateScan = () => {
     setSessionState("CONNECTED");
