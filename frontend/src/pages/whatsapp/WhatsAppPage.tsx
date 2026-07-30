@@ -28,6 +28,8 @@ export default function WhatsAppPage() {
   const [qrCodeData, setQrCodeData] = useState<string>(
     "2@5M+8K9hF42N1qL2W8g9P3xT7vY4zC1bA6dE0fG8hI=,1000000000@s.whatsapp.net,ARGUS_MDM_PAIRING"
   );
+  const [pairingCode, setPairingCode] = useState<string>("8942-5103");
+  const [evolutionUrl] = useState<string>("http://localhost:8081");
   const [countdown, setCountdown] = useState(45);
   const [activeChat, setActiveChat] = useState<string>("c1");
   const [messageInput, setMessageInput] = useState("");
@@ -42,24 +44,46 @@ export default function WhatsAppPage() {
     ],
   });
 
+  const fetchLiveEvolutionQr = async () => {
+    try {
+      const response = await fetch(`${evolutionUrl}/instance/connect/argus_session`, {
+        headers: {
+          apikey: "argus_mdm_secret_key_2026",
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data?.code) setQrCodeData(data.code);
+        if (data?.pairingCode) setPairingCode(data.pairingCode);
+        if (data?.instance?.state === "open") {
+          setSessionState("CONNECTED");
+        }
+      }
+    } catch {
+      // Endpoint fallback
+    }
+  };
+
   // Countdown timer to refresh QR Code periodically when scanning
   useEffect(() => {
     if (sessionState !== "SCANNING") return;
+    fetchLiveEvolutionQr();
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          setQrCodeData(`2@${Math.random().toString(36).substring(2)}+ARGUS=${Date.now()},1000000000@s.whatsapp.net`);
+          fetchLiveEvolutionQr();
           return 45;
         }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [sessionState]);
+  }, [sessionState, evolutionUrl]);
 
   const handleSimulateScan = () => {
     setSessionState("CONNECTED");
-    toast.success("Sessão do WhatsApp conectada com sucesso!");
+    toast.success("Sessão do WhatsApp conectada no painel com sucesso!");
   };
 
   const handleDisconnect = () => {
@@ -210,6 +234,14 @@ export default function WhatsAppPage() {
                     <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                       <RefreshCw className="h-3 w-3 animate-spin text-emerald-500" />
                       Atualizando em <span className="font-bold text-foreground">{countdown}s</span>
+                    </p>
+                  </div>
+
+                  {/* 8-Digit Pairing Code Fallback */}
+                  <div className="w-full text-center p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
+                    <p className="text-[11px] text-muted-foreground font-medium">Ou conecte por Código de Pareamento:</p>
+                    <p className="text-base font-mono font-bold tracking-widest text-emerald-600 dark:text-emerald-400 mt-0.5">
+                      {pairingCode}
                     </p>
                   </div>
 
