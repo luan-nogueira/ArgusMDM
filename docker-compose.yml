@@ -69,6 +69,22 @@ services:
     depends_on:
       - backend
 
+  evolution-api:
+    image: atendai/evolution-api:v2.1.1
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - SERVER_URL=${EVOLUTION_SERVER_URL:-http://localhost:8081}
+      - AUTHENTICATION_TYPE=apikey
+      - AUTHENTICATION_API_KEY=${EVOLUTION_API_KEY:-argus_mdm_secret_key_2026}
+      - DATABASE_ENABLED=true
+      - DATABASE_CONNECTION_URI=postgresql://${DB_USER:-mdm_user}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-mdm_db}
+      - LOG_LEVEL=ERROR
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres_data:
   redis_data:
