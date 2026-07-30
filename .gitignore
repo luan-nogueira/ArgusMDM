@@ -1,0 +1,38 @@
+# Segredos / configuração local
+.env
+!.env.example
+backend/firebase-service-account.json
+.mcp.json
+.claude/
+
+# Backend (Maven)
+backend/target/
+*.class
+
+# Frontend (Node/Vite)
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+node_modules/
+
+# Android / Gradle
+android/.gradle/
+android/**/build/
+android/local.properties
+android/*.iml
+android/.idea/
+android/captures/
+android/.cxx/
+android/**/release/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

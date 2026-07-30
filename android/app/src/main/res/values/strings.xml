@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Argus MDM</string>
+
+    <string name="notification_channel_managed_name">Dispositivo gerenciado</string>
+    <string name="notification_channel_managed_desc">Indica que este dispositivo está sob gerenciamento do Argus MDM</string>
+    <string name="notification_managed_title">Dispositivo gerenciado</string>
+    <string name="notification_managed_text">Este dispositivo é monitorado pelo Argus MDM. Toque para ver detalhes.</string>
+
+    <string name="notification_channel_sync_name">Sincronização</string>
+    <string name="notification_channel_sync_desc">Progresso da sincronização em segundo plano</string>
+
+    <string name="provisioning_title">Configurar dispositivo</string>
+    <string name="provisioning_description">Informe o ID do dispositivo e a chave de API fornecidos pelo administrador para vincular este aparelho ao Argus MDM.</string>
+    <string name="provisioning_device_id_label">ID do dispositivo</string>
+    <string name="provisioning_api_key_label">Chave de API</string>
+    <string name="provisioning_scan_qr">Escanear QR code</string>
+    <string name="provisioning_confirm">Vincular dispositivo</string>
+    <string name="provisioning_error">Não foi possível vincular o dispositivo. Verifique os dados e sua conexão.</string>
+
+    <string name="permissions_title">Permissões necessárias</string>
+    <string name="permissions_location_title">Localização</string>
+    <string name="permissions_location_desc">Usada para mostrar a localização do dispositivo no painel administrativo.</string>
+    <string name="permissions_background_location_title">Localização em segundo plano</string>
+    <string name="permissions_background_location_desc">Permite que a localização seja atualizada mesmo com o app fechado.</string>
+    <string name="permissions_notifications_title">Notificações</string>
+    <string name="permissions_notifications_desc">Exibe o aviso permanente de que este dispositivo está gerenciado.</string>
+    <string name="permissions_usage_access_title">Acesso a uso de apps</string>
+    <string name="permissions_usage_access_desc">Necessário para reportar os aplicativos instalados no inventário.</string>
+    <string name="permissions_grant">Conceder</string>
+    <string name="permissions_granted">Concedida</string>
+    <string name="permissions_continue">Continuar</string>
+
+    <string name="dashboard_title">Argus MDM</string>
+    <string name="dashboard_managed_banner">Este dispositivo é gerenciado pela sua organização</string>
+    <string name="dashboard_last_sync">Última sincronização</string>
+    <string name="dashboard_never_synced">Nunca sincronizado</string>
+    <string name="dashboard_sync_now">Sincronizar agora</string>
+    <string name="dashboard_syncing">Sincronizando…</string>
+    <string name="dashboard_policy_title">Política aplicada</string>
+    <string name="dashboard_no_policy">Nenhuma política atribuída</string>
+    <string name="dashboard_unlink">Desvincular dispositivo</string>
+</resources>

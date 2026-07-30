@@ -1,0 +1,74 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-mdm_db}
+      POSTGRES_USER: ${DB_USER:-mdm_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?defina DB_PASSWORD no .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-mdm_user} -d ${DB_NAME:-mdm_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-mdm_db}
+      DB_USER: ${DB_USER:-mdm_user}
+      DB_PASSWORD: ${DB_PASSWORD:?defina DB_PASSWORD no .env}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET:?defina JWT_SECRET no .env (mínimo 32 caracteres aleatórios)}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?defina ADMIN_PASSWORD no .env}
+      FIREBASE_ENABLED: ${FIREBASE_ENABLED:-false}
+    # Quando for ativar o Firebase (FIREBASE_ENABLED=true no .env), descomente e
+    # coloque o service-account.json baixado do console do Firebase nesse caminho:
+    # volumes:
+    #   - ./backend/firebase-service-account.json:/app/config/firebase-service-account.json:ro
+    ports:
+      - "8080:8080"
+
+  # Expõe o backend publicamente com HTTPS sem precisar de domínio próprio nem
+  # abrir portas no roteador. Crie o túnel no painel do Cloudflare Zero Trust
+  # (Networks > Tunnels) e cole o token gerado no .env como CLOUDFLARE_TUNNEL_TOKEN.
+  # Veja docs/deploy-servidor-proprio.md para o passo a passo.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:?defina CLOUDFLARE_TUNNEL_TOKEN no .env}
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:

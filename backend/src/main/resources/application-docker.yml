@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/${DB_NAME:mdm_db}
+  data:
+    redis:
+      host: redis
+
+mdm:
+  firebase:
+    credentials-path: file:/app/config/firebase-service-account.json

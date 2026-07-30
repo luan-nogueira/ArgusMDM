@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- "Olho de Argus": círculos concêntricos representando vigilância -->
+    <path
+        android:fillColor="#F9FAFB"
+        android:pathData="M54,54 m-30,0 a30,30 0 1,0 60,0 a30,30 0 1,0 -60,0 z" />
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M54,54 m-16,0 a16,16 0 1,0 32,0 a16,16 0 1,0 -32,0 z" />
+    <path
+        android:fillColor="#0F172A"
+        android:pathData="M54,54 m-7,0 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 z" />
+</vector>
