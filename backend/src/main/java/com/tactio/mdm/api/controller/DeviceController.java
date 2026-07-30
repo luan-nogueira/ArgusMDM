@@ -87,4 +87,11 @@ public class DeviceController {
         deviceUseCase.lock(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/unlock")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR')")
+    public ResponseEntity<Void> unlock(@PathVariable UUID id) {
+        deviceUseCase.unlock(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -41,4 +41,6 @@ export const devicesApi = {
     apiClient.post<DeviceProvisionResponse>(`/devices/${id}/api-key/regenerate`).then((r) => r.data),
 
   lock: (id: string) => apiClient.post(`/devices/${id}/lock`).then((r) => r.data),
+
+  unlock: (id: string) => apiClient.post(`/devices/${id}/unlock`).then((r) => r.data),
 };

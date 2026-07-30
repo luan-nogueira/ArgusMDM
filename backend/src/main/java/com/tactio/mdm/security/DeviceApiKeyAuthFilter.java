@@ -1,5 +1,6 @@
 package com.tactio.mdm.security;
 
+import com.tactio.mdm.domain.enums.DeviceStatus;
 import com.tactio.mdm.domain.repository.DeviceRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -44,6 +45,7 @@ public class DeviceApiKeyAuthFilter extends OncePerRequestFilter {
                 deviceRepository.findById(deviceId)
                         .filter(device -> device.getApiKeyHash() != null)
                         .filter(device -> passwordEncoder.matches(deviceKey, device.getApiKeyHash()))
+                        .filter(device -> device.getStatus() != DeviceStatus.BLOCKED)
                         .ifPresent(device -> {
                             var authentication = new UsernamePasswordAuthenticationToken(
                                     device.getId(), null, List.of(new SimpleGrantedAuthority("ROLE_DEVICE")));

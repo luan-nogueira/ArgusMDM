@@ -148,6 +148,14 @@ public class DeviceUseCase {
         auditLogService.record(AuditAction.DEVICE_LOCKED, "Device", id.toString(), null);
     }
 
+    @Transactional
+    public void unlock(UUID id) {
+        Device device = findOrThrow(id);
+        device.setStatus(device.getLastSyncAt() == null ? DeviceStatus.PROVISIONING : DeviceStatus.ONLINE);
+        deviceRepository.save(device);
+        auditLogService.record(AuditAction.DEVICE_UNLOCKED, "Device", id.toString(), null);
+    }
+
     @Transactional(readOnly = true)
     public DashboardSummaryResponse dashboardSummary() {
         long total = deviceRepository.count();

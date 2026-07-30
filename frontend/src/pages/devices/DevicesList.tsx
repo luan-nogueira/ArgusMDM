@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { Lock, Search, Smartphone, Trash2 } from "lucide-react";
+import { Lock, LockOpen, Search, Smartphone, Trash2 } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -45,6 +45,14 @@ export default function DevicesList() {
     mutationFn: devicesApi.lock,
     onSuccess: () => {
       toast.success("Dispositivo bloqueado");
+      queryClient.invalidateQueries({ queryKey: ["devices"] });
+    },
+  });
+
+  const unlockMutation = useMutation({
+    mutationFn: devicesApi.unlock,
+    onSuccess: () => {
+      toast.success("Dispositivo desbloqueado");
       queryClient.invalidateQueries({ queryKey: ["devices"] });
     },
   });
@@ -145,14 +153,25 @@ export default function DevicesList() {
                         {device.lastSyncAt ? new Date(device.lastSyncAt).toLocaleString("pt-BR") : "Nunca"}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          title="Bloquear"
-                          onClick={() => lockMutation.mutate(device.id)}
-                        >
-                          <Lock className="h-4 w-4" />
-                        </Button>
+                        {device.status === "BLOCKED" ? (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Desbloquear"
+                            onClick={() => unlockMutation.mutate(device.id)}
+                          >
+                            <LockOpen className="h-4 w-4" />
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Bloquear"
+                            onClick={() => lockMutation.mutate(device.id)}
+                          >
+                            <Lock className="h-4 w-4" />
+                          </Button>
+                        )}
                         <Button
                           variant="ghost"
                           size="icon"
