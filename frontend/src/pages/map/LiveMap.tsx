@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import { Circle, MapContainer, Marker, Polyline, Popup, TileLayer } from "react-leaflet";
+import { Circle, CircleMarker, MapContainer, Marker, Polyline, Popup, TileLayer } from "react-leaflet";
 import { toast } from "sonner";
 import { LogIn, LogOut, MapPin, Trash2 } from "lucide-react";
 import "leaflet/dist/leaflet.css";
@@ -10,6 +10,8 @@ import "leaflet/dist/leaflet.css";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { devicesApi } from "@/api/devices";
@@ -17,8 +19,15 @@ import { geofencesApi } from "@/api/geofences";
 import { locationsApi } from "@/api/locations";
 import { useStompTopic } from "@/hooks/use-stomp-topic";
 import { markerIcon } from "@/lib/leaflet-icon";
+import { computeStops, formatDuration } from "@/lib/stops";
 import type { LocationHistoryResponse } from "@/types";
 import { GeofenceFormDialog } from "./GeofenceFormDialog";
+
+function toDateTimeLocalValue(date: Date): string {
+  const offset = date.getTimezoneOffset();
+  const local = new Date(date.getTime() - offset * 60_000);
+  return local.toISOString().slice(0, 16);
+}
 
 const DEFAULT_CENTER: [number, number] = [-15.793889, -47.882778];
 
@@ -41,14 +50,25 @@ export default function LiveMap() {
     queryFn: () => devicesApi.list({ size: 100 }),
   });
 
-  const from = useMemo(() => new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), []);
-  const to = useMemo(() => new Date().toISOString(), []);
+  const [fromInput, setFromInput] = useState(() =>
+    toDateTimeLocalValue(new Date(Date.now() - 24 * 60 * 60 * 1000)),
+  );
+  const [toInput, setToInput] = useState(() => toDateTimeLocalValue(new Date()));
+
+  const from = useMemo(() => new Date(fromInput).toISOString(), [fromInput]);
+  const to = useMemo(() => new Date(toInput).toISOString(), [toInput]);
 
   const { data: history } = useQuery({
     queryKey: ["device-history", selectedDeviceId, from, to],
-    queryFn: () => locationsApi.history(selectedDeviceId, from, to, 0, 200),
+    queryFn: () => locationsApi.history(selectedDeviceId, from, to, 0, 1000),
     enabled: !!selectedDeviceId,
   });
+
+  const stops = useMemo(() => {
+    if (!history?.content.length) return [];
+    const chronological = [...history.content].reverse();
+    return computeStops(chronological);
+  }, [history]);
 
   const { data: events } = useQuery({
     queryKey: ["geofence-events", selectedDeviceId],
@@ -113,6 +133,32 @@ export default function LiveMap() {
                 />
               ))}
               {trajectory.length > 1 && <Polyline positions={trajectory} pathOptions={{ color: "#2563eb" }} />}
+              {stops.map((stop, index) => (
+                <CircleMarker
+                  key={`${stop.startedAt}-${index}`}
+                  center={[stop.latitude, stop.longitude]}
+                  radius={8}
+                  pathOptions={{ color: "#dc2626", fillColor: "#f87171", fillOpacity: 0.7 }}
+                >
+                  <Popup>
+                    <div className="text-sm">
+                      <p className="font-medium">Parado por {formatDuration(stop.durationMs)}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(stop.startedAt).toLocaleString("pt-BR")} até{" "}
+                        {new Date(stop.endedAt).toLocaleString("pt-BR")}
+                      </p>
+                      <a
+                        className="text-xs text-primary underline"
+                        target="_blank"
+                        rel="noreferrer"
+                        href={`https://www.google.com/maps?q=${stop.latitude},${stop.longitude}`}
+                      >
+                        Abrir no Google Maps
+                      </a>
+                    </div>
+                  </Popup>
+                </CircleMarker>
+              ))}
             </MapContainer>
           </CardContent>
         </Card>
@@ -141,9 +187,32 @@ export default function LiveMap() {
               </Select>
 
               {selectedDeviceId && (
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs">De</Label>
+                    <Input
+                      type="datetime-local"
+                      value={fromInput}
+                      onChange={(e) => setFromInput(e.target.value)}
+                      className="h-8 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Até</Label>
+                    <Input
+                      type="datetime-local"
+                      value={toInput}
+                      onChange={(e) => setToInput(e.target.value)}
+                      className="h-8 text-xs"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {selectedDeviceId && (
                 <div className="space-y-2">
                   <p className="text-xs text-muted-foreground">
-                    {history?.content.length ?? 0} pontos nas últimas 24h
+                    {history?.content.length ?? 0} pontos no período selecionado
                   </p>
                   <p className="text-xs font-medium">Eventos de geofence</p>
                   {!events || events.content.length === 0 ? (
@@ -168,6 +237,41 @@ export default function LiveMap() {
               )}
             </CardContent>
           </Card>
+
+          {selectedDeviceId && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Paradas (10+ min no mesmo lugar)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {stops.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">
+                    Nenhuma parada longa detectada no período selecionado
+                  </p>
+                ) : (
+                  <ul className="max-h-64 space-y-2 overflow-y-auto text-xs">
+                    {stops.map((stop, index) => (
+                      <li key={`${stop.startedAt}-${index}`} className="rounded-md border border-border p-2">
+                        <p className="font-medium">{formatDuration(stop.durationMs)}</p>
+                        <p className="text-muted-foreground">
+                          {new Date(stop.startedAt).toLocaleString("pt-BR")} até{" "}
+                          {new Date(stop.endedAt).toLocaleString("pt-BR")}
+                        </p>
+                        <a
+                          className="text-primary underline"
+                          target="_blank"
+                          rel="noreferrer"
+                          href={`https://www.google.com/maps?q=${stop.latitude},${stop.longitude}`}
+                        >
+                          Abrir no Google Maps
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader className="flex-row items-center justify-between">
