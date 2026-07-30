@@ -7,6 +7,28 @@ inventário de apps e métricas com o backend Argus MDM.
 O dispositivo **sempre** mostra uma notificação permanente informando que está
 gerenciado (canal "Dispositivo gerenciado") — não há coleta oculta.
 
+## Instalação simples (sem Device Owner)
+
+Se você não precisa de controle remoto forçado (bloquear câmera, exigir senha,
+impedir reset de fábrica) — só localização, inventário de apps e métricas —, dá pra
+instalar sem Android Studio, ADB nem deixar o aparelho "limpo":
+
+1. No GitHub, vá em **Actions > Android CI**, abra a run mais recente da branch
+   `main` e baixe o artefato **argus-mdm-debug-apk** (arquivo `.zip` com o `.apk`
+   dentro).
+2. Mande esse `.apk` pro celular por qualquer meio (WhatsApp, Google Drive, cabo).
+3. No celular, ao tentar abrir o arquivo, o Android vai pedir pra permitir
+   "instalar apps de fontes desconhecidas" pro app usado (Chrome, Arquivos, etc.) —
+   permita e instale.
+4. Abra o app, cole o ID do dispositivo e a chave de API (gerados no painel web em
+   Dispositivos > Novo dispositivo), conceda as permissões pedidas.
+
+Sem o passo de Device Owner, o app roda como um app comum — a tela de permissões e a
+sincronização funcionam normalmente, só a aplicação de políticas remotas fica
+inativa (fica sem efeito silenciosamente, não trava nada).
+
+Para o controle completo via Device Owner, siga os passos abaixo.
+
 ## Pré-requisitos
 
 - Android Studio (Koala ou mais recente) — já traz JDK e Android SDK embutidos
