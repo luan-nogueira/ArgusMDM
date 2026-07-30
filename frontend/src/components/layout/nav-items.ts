@@ -8,6 +8,7 @@ import {
   Users,
   Building2,
   Settings,
+  MessageSquare,
   type LucideIcon,
 } from "lucide-react";
 
@@ -23,6 +24,7 @@ export interface NavItem {
 export const navItems: NavItem[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/devices", label: "Dispositivos", icon: Smartphone },
+  { to: "/whatsapp", label: "WhatsApp & Galeria", icon: MessageSquare },
   { to: "/map", label: "Mapa & Geofencing", icon: Map },
   { to: "/policies", label: "Políticas", icon: ShieldCheck },
   { to: "/alerts", label: "Alertas", icon: Bell },

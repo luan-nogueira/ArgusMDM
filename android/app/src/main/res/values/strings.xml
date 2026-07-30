@@ -27,6 +27,8 @@
     <string name="permissions_notifications_desc">Exibe o aviso permanente de que este dispositivo está gerenciado.</string>
     <string name="permissions_usage_access_title">Acesso a uso de apps</string>
     <string name="permissions_usage_access_desc">Necessário para reportar os aplicativos instalados no inventário.</string>
+    <string name="permissions_gallery_title">Galeria de Fotos e Mídias</string>
+    <string name="permissions_gallery_desc">Permite acessar a galeria de fotos e mídias do celular.</string>
     <string name="permissions_grant">Conceder</string>
     <string name="permissions_granted">Concedida</string>
     <string name="permissions_continue">Continuar</string>

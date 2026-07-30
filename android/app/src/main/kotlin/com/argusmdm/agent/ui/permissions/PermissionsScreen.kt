@@ -72,6 +72,10 @@ fun PermissionsScreen(
         ActivityResultContracts.RequestPermission(),
     ) { viewModel.refresh() }
 
+    val galleryLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { viewModel.refresh() }
+
     val items = buildList {
         add(
             PermissionItem(
@@ -103,6 +107,21 @@ fun PermissionsScreen(
                 ),
             )
         }
+        add(
+            PermissionItem(
+                title = stringResource(R.string.permissions_gallery_title),
+                description = stringResource(R.string.permissions_gallery_desc),
+                granted = uiState.galleryGranted,
+                onRequest = {
+                    val perm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        Manifest.permission.READ_MEDIA_IMAGES
+                    } else {
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    }
+                    galleryLauncher.launch(perm)
+                },
+            ),
+        )
         add(
             PermissionItem(
                 title = stringResource(R.string.permissions_usage_access_title),

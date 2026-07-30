@@ -12,6 +12,7 @@ data class PermissionsUiState(
     val backgroundLocationGranted: Boolean = false,
     val notificationsGranted: Boolean = false,
     val usageAccessGranted: Boolean = false,
+    val galleryGranted: Boolean = false,
 ) {
     val canContinue: Boolean
         get() = foregroundLocationGranted && notificationsGranted
@@ -29,6 +30,7 @@ class PermissionsViewModel(application: Application) : AndroidViewModel(applicat
             backgroundLocationGranted = PermissionUtils.hasBackgroundLocation(context),
             notificationsGranted = PermissionUtils.hasNotifications(context),
             usageAccessGranted = PermissionUtils.hasUsageAccess(context),
+            galleryGranted = PermissionUtils.hasGalleryPermission(context),
         )
     }
 }

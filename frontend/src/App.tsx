@@ -13,6 +13,7 @@ import Logs from "@/pages/logs/Logs";
 import Users from "@/pages/users/Users";
 import Organization from "@/pages/org/Organization";
 import Settings from "@/pages/settings/Settings";
+import WhatsAppPage from "@/pages/whatsapp/WhatsAppPage";
 import NotFound from "@/pages/NotFound";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="/devices" element={<DevicesList />} />
           <Route path="/devices/:id" element={<DeviceDetail />} />
+          <Route path="/whatsapp" element={<WhatsAppPage />} />
           <Route path="/map" element={<LiveMap />} />
           <Route path="/policies" element={<Policies />} />
           <Route path="/alerts" element={<Alerts />} />
