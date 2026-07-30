@@ -18,7 +18,7 @@ android {
         versionCode = 1
         versionName = "1.0.0"
 
-        buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
+        buildConfigField("String", "API_BASE_URL", "\"https://fastest-unavailable-supplied-innovation.trycloudflare.com/\"")
     }
 
     buildTypes {
@@ -28,7 +28,7 @@ android {
         release {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            buildConfigField("String", "API_BASE_URL", "\"https://SEU_SERVIDOR_AQUI/\"")
+            buildConfigField("String", "API_BASE_URL", "\"https://fastest-unavailable-supplied-innovation.trycloudflare.com/\"")
         }
     }
 
